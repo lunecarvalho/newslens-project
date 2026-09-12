@@ -263,7 +263,7 @@ model = AutoModelForSequenceClassification.from_pretrained(
 
 ---
 
-## 🛠️ Tecnologias
+## Tecnologias
 
 O projeto utiliza principalmente:
 

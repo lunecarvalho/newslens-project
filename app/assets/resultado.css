@@ -85,7 +85,7 @@
     .resultado-pagina .aviso-resultado, .resultado-pagina .distribuicao-predicoes { padding: 1rem; }
 }
 
-/* Escopo pr?prio do HTML: n?o depende dos cont?ineres internos do Streamlit. */
+/* Escopo proprio do HTML: não depende dos contêineres internos do Streamlit. */
 .resultado-pagina { width: 100%; max-width: 900px; margin: 0 auto; box-sizing: border-box; color: var(--cor-texto); }
 .resultado-pagina *, .resultado-pagina *::before, .resultado-pagina *::after { box-sizing: border-box; }
 .resultado-pagina :is(p, span, a) { font-family: var(--fonte-interface); }

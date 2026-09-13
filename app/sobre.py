@@ -1,5 +1,3 @@
-"""Conteúdo institucional do NewsLens, separado da inferência."""
-
 from base64 import b64encode
 from pathlib import Path
 

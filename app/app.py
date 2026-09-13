@@ -34,7 +34,6 @@ def criar_icone(nome):
         'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" '
         f'aria-hidden="true">{desenhos[nome]}</svg>'
     )
-    # Preserva o SVG ao passar pela sanitização do HTML do Streamlit.
     imagem_codificada = b64encode(desenho_svg.encode("utf-8")).decode("ascii")
     return f'<img class="icone" src="data:image/svg+xml;base64,{imagem_codificada}" alt="" aria-hidden="true">'
 

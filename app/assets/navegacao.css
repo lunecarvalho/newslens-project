@@ -1,4 +1,4 @@
-/* Botões nativos no header compartilhado, com a aparência do menu aprovado. */
+/* Botões nativos no header compartilhado, com a aparência do menu. */
 .st-key-cabecalho_navegavel { min-height: 55px; padding: .3rem 2.5rem; border-bottom: 1px solid var(--cor-borda); gap: 1.5rem; }
 .st-key-cabecalho_navegavel .marca-navegavel { display: inline-flex; align-items: center; gap: .6rem; color: var(--cor-primaria); font: 400 1.25rem var(--fonte-titulo); white-space: nowrap; }
 .st-key-cabecalho_navegavel .marca-navegavel img { width: 25px; height: 25px; }

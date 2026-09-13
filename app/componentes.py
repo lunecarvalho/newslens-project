@@ -1,5 +1,3 @@
-"""Componentes da tela de resultado, sem lógica de inferência."""
-
 from base64 import b64encode
 from pathlib import Path
 

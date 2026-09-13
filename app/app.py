@@ -1,9 +1,18 @@
-﻿from pathlib import Path
+from pathlib import Path
 import time
 from base64 import b64encode
 
 import streamlit as st
+from sobre import exibir_pagina_sobre
 
+from componentes import (
+    exibir_tela_analisando,
+    exibir_tela_resultado,
+)
+
+
+DURACAO_SPLASH = 1.0
+DURACAO_MINIMA_ANALISE = 1.5
 
 st.set_page_config(page_title="NewsLens", page_icon=":material/search:", layout="wide")
 
@@ -41,24 +50,24 @@ def exibir_abertura():
                 </div>
             </section>
         ''')
-        time.sleep(2)
+        time.sleep(DURACAO_SPLASH)
         st.session_state.tela_abertura_exibida = True
         st.rerun()
 
 
+def navegar_para(pagina):
+    st.session_state.pagina_atual = pagina
+
+
 def exibir_cabecalho():
-    st.html(f'''
-        <header class="cabecalho">
-            <a class="marca" href="#inicio" aria-label="NewsLens — Início">
-                {criar_icone("lupa")}<span>NewsLens</span>
-            </a>
-            <nav aria-label="Navegação principal">
-                <a class="selecionado" href="#inicio" aria-current="page">Início</a>
-                <span aria-disabled="true" title="Em breve">Histórico</span>
-                <span aria-disabled="true" title="Em breve">Sobre</span>
-            </nav>
-        </header>
-    ''')
+    caminho_estilos = Path(__file__).parent / "assets" / "navegacao.css"
+    st.markdown(f"<style>{caminho_estilos.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
+    pagina_ativa = "sobre" if st.session_state.get("pagina_atual") == "sobre" else "inicio"
+    with st.container(key="cabecalho_navegavel", horizontal=True, vertical_alignment="center"):
+        st.html(f'<div class="marca-navegavel">{criar_icone("lupa")}<span>NewsLens</span></div>')
+        with st.container(key=f"menu_{pagina_ativa}", horizontal=True, width="content", gap="small"):
+            st.button("Início", key="navegar_inicio", type="tertiary", on_click=navegar_para, args=("inicio",))
+            st.button("Sobre", key="navegar_sobre", type="tertiary", on_click=navegar_para, args=("sobre",))
 
 
 def exibir_formulario():
@@ -87,31 +96,13 @@ def exibir_formulario():
                 "Analisar notícia", type="primary", width="stretch"
             )
         if analisar:
-            st.session_state.pop("resultado", None)
+            st.session_state.pop("resultado_analise", None)
             if not texto_noticia.strip():
                 st.warning("Insira o texto da notícia para iniciar a análise.")
             else:
-                try:
-                    with st.spinner("Analisando notícia..."):
-                        # Carrega o modelo apenas quando a primeira análise é solicitada.
-                        from model import classificar_noticia
-
-                        st.session_state.resultado = classificar_noticia(texto_noticia)
-                except Exception:
-                    st.error("Não foi possível concluir a análise. Tente novamente em instantes.")
-        if "resultado" in st.session_state:
-            st.subheader("Resultado da classificação")
-            resultado = st.session_state.resultado
-            if resultado == "Falsa":
-                st.warning("Possivelmente falsa")
-            elif resultado == "Verdadeira":
-                st.success("Possivelmente verdadeira")
-            else:
-                st.error("O modelo retornou uma classificação não reconhecida.")
-            st.caption(
-                "O resultado representa uma classificação realizada por um modelo de "
-                "inteligência artificial e não substitui a verificação factual em fontes confiáveis."
-            )
+                st.session_state.texto_analisado = texto_noticia
+                st.session_state.pagina_atual = "analisando"
+                st.rerun()
 
 
 def exibir_cards_informativos():
@@ -130,13 +121,40 @@ def exibir_cards_informativos():
 
 carregar_estilos()
 exibir_abertura()
-exibir_cabecalho()
-with st.container(key="conteudo_principal"):
-    st.html('''
-        <section class="introducao" id="inicio">
-            <h1>Analise uma notícia</h1>
-            <p>Insira o texto ou a URL da notícia para verificar a veracidade do conteúdo com IA.</p>
-        </section>
-    ''')
-    exibir_formulario()
-    exibir_cards_informativos()
+if st.session_state.get("pagina_atual", "inicio") == "resultado":
+    exibir_tela_resultado(st.session_state.resultado_analise)
+elif st.session_state.get("pagina_atual") == "sobre":
+    exibir_cabecalho()
+    exibir_pagina_sobre(criar_icone("lupa"), navegar_para)
+elif st.session_state.get("pagina_atual") == "analisando":
+    inicio_analise = time.perf_counter()
+    exibir_cabecalho()
+    exibir_tela_analisando(criar_icone("lupa"))
+    try:
+        from model import classificar_noticia
+
+        resultado_analise = classificar_noticia(st.session_state.texto_analisado)
+    except Exception:
+        st.session_state.erro_analise = True
+        st.session_state.pagina_atual = "inicio"
+    else:
+        tempo_decorrido = time.perf_counter() - inicio_analise
+        tempo_restante = max(0.0, DURACAO_MINIMA_ANALISE - tempo_decorrido)
+        if tempo_restante > 0:
+            time.sleep(tempo_restante)
+        st.session_state.resultado_analise = resultado_analise
+        st.session_state.pagina_atual = "resultado"
+    st.rerun()
+else:
+    exibir_cabecalho()
+    with st.container(key="conteudo_principal"):
+        st.html('''
+            <section class="introducao" id="inicio">
+                <h1>Analise uma notícia</h1>
+                <p>Insira o texto ou a URL da notícia para verificar a veracidade do conteúdo com IA.</p>
+            </section>
+        ''')
+        if st.session_state.pop("erro_analise", False):
+            st.error("Não foi possível concluir a análise. Tente novamente em instantes.")
+        exibir_formulario()
+        exibir_cards_informativos()

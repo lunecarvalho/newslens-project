@@ -1,0 +1,39 @@
+﻿/* Exclusivo da tela de processamento. Fontes e identidade herdadas da home. */
+.analisando-pagina { width: min(600px, calc(100% - 2rem)); margin: 0 auto; padding: clamp(3rem, 9vh, 5rem) 0 4rem; color: var(--cor-texto, #10151c); font-family: var(--fonte-interface, 'Outfit', sans-serif); }
+.analisando-pagina .analisando-conteudo { text-align: center; }
+.analisando-pagina .analisando-lupa { width: 150px; height: 150px; position: relative; display: grid; place-items: center; margin: 0 auto; }
+.analisando-pagina .analisando-lupa img { width: 60px; height: 60px; display: block; }
+.analisando-pagina .analisando-orbita { position: absolute; inset: 0; border: 2px solid #dfe6ef; border-left-color: transparent; border-bottom-color: #2c7ed5; border-radius: 50%; animation: analisando-girar 2.2s linear infinite; }
+.analisando-pagina .analisando-orbita-interna { inset: 15px; border-width: 1px; border-top-color: transparent; animation-direction: reverse; animation-duration: 3s; }
+.analisando-pagina h1 { font: 400 clamp(1.7rem, 4vw, 2rem)/1.25 var(--fonte-titulo, 'DM Serif Display', serif); margin: 0 0 1.5rem; padding: 0; }
+.analisando-pagina p { font: 400 1.0625rem/1.65 var(--fonte-interface, 'Outfit', sans-serif); color: var(--cor-texto-secundario, #687e9c); max-width: 470px; margin: 0 auto; }
+.analisando-pagina .analisando-barras { display: flex; gap: 7px; justify-content: center; align-items: center; height: 36px; margin: 4rem auto 3rem; }
+.analisando-pagina .analisando-barras span { width: 6px; height: 32px; border-radius: 4px; background: #3787d9; animation: analisando-oscilar 1s ease-in-out infinite alternate; }
+.analisando-pagina .analisando-barras span:nth-child(2n) { height: 25px; animation-delay: -.3s; }
+.analisando-pagina .analisando-barras span:nth-child(3n) { height: 18px; animation-delay: -.6s; }
+.analisando-pagina .analisando-barras span:nth-child(4n), .analisando-pagina .analisando-barras span:nth-child(5) { height: 14px; animation-delay: -.8s; }
+.analisando-pagina .analisando-etapas { list-style: none; width: fit-content; max-width: 100%; margin: 0 auto; padding: 0; text-align: left; }
+.analisando-pagina .analisando-etapa { display: flex; gap: 15px; align-items: center; margin: 0 0 15px; font: 400 .9375rem/1.5 var(--fonte-interface, 'Outfit', sans-serif); --inicio-etapa: 0s; --fim-etapa: .25s; }
+.analisando-pagina .analisando-etapa-2 { --inicio-etapa: .25s; --fim-etapa: .5s; }
+.analisando-pagina .analisando-etapa-3 { --inicio-etapa: .5s; --fim-etapa: .8s; }
+.analisando-pagina .analisando-etapa-4 { --inicio-etapa: .8s; }
+.analisando-pagina .analisando-marcador { width: 25px; height: 25px; flex-shrink: 0; border-radius: 50%; background: var(--cor-primaria, #205bad); color: white; display: grid; place-items: center; opacity: .25; animation: analisando-ativar .15s var(--inicio-etapa) forwards; }
+.analisando-pagina .analisando-marcador span { grid-area: 1 / 1; }
+.analisando-pagina .analisando-ativo { font-size: .6rem; animation: analisando-ocultar .01s var(--fim-etapa) forwards; }
+.analisando-pagina .analisando-concluido { opacity: 0; font-size: 1rem; animation: analisando-ativar .15s var(--fim-etapa) forwards; }
+.analisando-pagina .analisando-etapa-4 .analisando-concluido { display: none; }
+.analisando-pagina .analisando-etapa-4 .analisando-ativo { animation: analisando-pulsar 1s ease-in-out infinite alternate; }
+@keyframes analisando-girar { to { transform: rotate(360deg); } }
+@keyframes analisando-oscilar { to { transform: scaleY(.4); opacity: .65; } }
+@keyframes analisando-ativar { to { opacity: 1; } }
+@keyframes analisando-ocultar { to { opacity: 0; } }
+@keyframes analisando-pulsar { to { opacity: .4; } }
+@media (max-width: 480px) {
+    .analisando-pagina { padding-top: 2.5rem; }
+    .analisando-pagina .analisando-lupa { width: 120px; height: 120px; }
+    .analisando-pagina .analisando-lupa img { width: 48px; height: 48px; }
+    .analisando-pagina .analisando-barras { margin: 2.5rem auto 2rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .analisando-pagina .analisando-orbita, .analisando-pagina .analisando-barras span, .analisando-pagina .analisando-etapa-4 .analisando-ativo { animation: none; }
+}

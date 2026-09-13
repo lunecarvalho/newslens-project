@@ -28,7 +28,14 @@ def classificar_noticia(texto):
         1: "Verdadeira"
     }
 
-    return classes[classe]
+    scores = torch.softmax(saida.logits, dim=1)[0]
+
+    return {
+        "classe": classes[classe],
+        "confianca": scores[classe].item(),
+        "score_falsa": scores[0].item(),
+        "score_verdadeira": scores[1].item(),
+    }
 
 
 if __name__ == "__main__":

@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+/* Tela de resultado: identidade compartilhada com a página inicial. */
+.resultado-pagina {
+    --fonte-titulo: 'DM Serif Display', Georgia, serif;
+    --fonte-interface: 'Outfit', Arial, sans-serif;
+    --fonte-mono: 'DM Mono', monospace;
+    --cor-superficie: #fff;
+    --cor-texto: #10151c;
+    --cor-texto-secundario: #687e9c;
+    --cor-primaria: #205bad;
+    --cor-borda: #d9e2ef;
+    --cor-seletor: #eff3f8;
+    --cor-falsa: #e83a43;
+    --cor-falsa-suave: #fff3f3;
+    --cor-falsa-borda: #ffbaba;
+    --cor-verdadeira: #12a64c;
+    --cor-verdadeira-suave: #effcf4;
+    --cor-verdadeira-borda: #97e7b6;
+    --cor-trilha: #e4e2f1;
+    --cor-detalhe: #f0f4f8;
+    --cor-aviso-fundo: #fffbed;
+    --cor-aviso-borda: #f5d46b;
+    --cor-aviso-texto: #dc8500;
+}
+.st-key-tela_resultado { width: calc(100% - 2.5rem); max-width: 900px; margin: 2rem auto 4rem; }
+.st-key-tela_resultado .st-key-nova_analise button { color: var(--cor-texto-secundario); font-size: .875rem; padding: .25rem .5rem; }
+.resultado-pagina.resultado-analise { font-family: var(--fonte-interface); }
+.resultado-pagina.resultado-analise.falsa, .resultado-pagina .predicao.falsa { --cor-resultado: var(--cor-falsa); --cor-resultado-suave: var(--cor-falsa-suave); --cor-resultado-borda: var(--cor-falsa-borda); }
+.resultado-pagina.resultado-analise.verdadeira, .resultado-pagina .predicao.verdadeira { --cor-resultado: var(--cor-verdadeira); --cor-resultado-suave: var(--cor-verdadeira-suave); --cor-resultado-borda: var(--cor-verdadeira-borda); }
+.resultado-pagina.resultado-analise h1 { font: 400 clamp(1.8rem, 4vw, 2.875rem)/1.2 var(--fonte-titulo); text-align: center; margin: 1.25rem 0 3rem; padding: 0; }
+.resultado-pagina .card-resultado { display: grid; grid-template-columns: 220px minmax(0, 1fr); align-items: center; gap: 3rem; background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: 16px; padding: 2.5rem; }
+.resultado-pagina .descricao-resultado { min-width: 0; }
+.resultado-pagina .pill-resultado { display: block; border: 1px solid var(--cor-resultado-borda); background: var(--cor-resultado-suave); color: var(--cor-resultado); border-radius: 999px; padding: .35rem 1rem; font-size: .75rem; line-height: 1.25; }
+.resultado-pagina .descricao-resultado h2 { font: 400 clamp(1.6rem, 3vw, 2.35rem)/1.2 var(--fonte-titulo); margin: 1.6rem 0 1.4rem; padding: 0; }
+.resultado-pagina .percentual-resultado { font: 500 1.5rem/1.4 var(--fonte-mono) !important; color: var(--cor-resultado); margin: 0 0 1.3rem; }
+.resultado-pagina .explicacao-resultado { font-size: .875rem; font-weight: 300; line-height: 1.8; color: var(--cor-texto-secundario); margin: 0 0 1.2rem; }
+.resultado-pagina .historico-visual { font-size: .75rem; color: var(--cor-primaria); text-decoration: underline; text-underline-offset: 3px; cursor: default; }
+
+/* Progresso e contador animados no navegador; sem reruns ou espera em Python. */
+@property --resultado-numero { syntax: '<integer>'; inherits: false; initial-value: 0; }
+.resultado-pagina .indicador-confianca { width: 216px; max-width: 100%; aspect-ratio: 1; position: relative; margin-inline: auto; }
+.resultado-pagina .anel-confianca { display: block; width: 100%; height: 100%; position: absolute; inset: 0; }
+.resultado-pagina .centro-confianca { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: .35rem; }
+.resultado-pagina .numero-confianca { font: 400 2.6rem/1.2 var(--fonte-mono); color: var(--cor-resultado); }
+.resultado-pagina .rotulo-confianca { font-size: .75rem; color: var(--cor-texto-secundario); }
+@supports (background: paint(something)) {
+    .resultado-pagina .numero-confianca { font-size: 0; --resultado-numero: var(--resultado-numero-final); counter-reset: confianca var(--resultado-numero); animation: resultado-contar-confianca 1.5s ease-out both; }
+    .resultado-pagina .numero-confianca::after { content: counter(confianca) '%'; font-size: 2.6rem; }
+}
+@keyframes resultado-contar-confianca { from { --resultado-numero: 0; } to { --resultado-numero: var(--resultado-numero-final); } }
+
+/* Detalhes e distribuição binária. */
+.resultado-pagina .secao-detalhes { margin-top: 2.5rem; }
+.resultado-pagina .secao-detalhes h2, .resultado-pagina .distribuicao-predicoes h2 { font: 400 .75rem/1.4 var(--fonte-interface); color: var(--cor-texto-secundario); letter-spacing: .035em; margin: 0 0 1rem; padding: 0; }
+.resultado-pagina .grade-detalhes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.resultado-pagina .detalhe-analise { background: var(--cor-detalhe); border: 1px solid var(--cor-borda); border-radius: 28px; padding: 1.25rem; min-width: 0; }
+.resultado-pagina .detalhe-analise span { display: block; font-size: .75rem; color: var(--cor-texto-secundario); margin-bottom: .5rem; }
+.resultado-pagina .detalhe-analise strong { display: block; font: 500 .875rem/1.5 var(--fonte-mono); overflow-wrap: anywhere; }
+.resultado-pagina .distribuicao-predicoes { margin-top: 2.5rem; padding: 1.5rem; background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: 16px; }
+.resultado-pagina .predicao + .predicao { margin-top: 1rem; }
+.resultado-pagina .rotulo-predicao { display: flex; justify-content: space-between; gap: 1rem; font-size: .75rem; color: var(--cor-texto-secundario); margin-bottom: .4rem; }
+.resultado-pagina .rotulo-predicao span:last-child { font-family: var(--fonte-mono); color: var(--cor-texto); }
+.resultado-pagina .trilha-predicao { background: var(--cor-seletor); height: 7px; border-radius: 999px; overflow: hidden; }
+.resultado-pagina .barra-predicao { background: var(--cor-resultado); height: 100%; border-radius: inherit; }
+.resultado-pagina .nota-scores { font-size: .7rem; color: var(--cor-texto-secundario); margin: 1rem 0 0; }
+.resultado-pagina .aviso-resultado { display: flex; gap: 1.1rem; align-items: flex-start; background: var(--cor-aviso-fundo); border: 1px solid var(--cor-aviso-borda); border-radius: 16px; padding: 1.5rem; margin-top: 2.5rem; }
+.resultado-pagina .aviso-resultado img { flex-shrink: 0; margin-top: .1rem; }
+.resultado-pagina .aviso-resultado h2 { font: 500 .875rem/1.5 var(--fonte-interface); color: var(--cor-aviso-texto); margin: 0 0 .35rem; padding: 0; }
+.resultado-pagina .aviso-resultado p { color: var(--cor-texto-secundario); font-size: .75rem; font-weight: 300; line-height: 1.8; margin: 0; }
+@media (prefers-reduced-motion: reduce) {
+    .resultado-pagina .anel-confianca, .resultado-pagina .numero-confianca { animation: none; }
+}
+@media (max-width: 700px) {
+    .resultado-pagina .card-resultado { gap: 1.5rem; padding: 1.5rem; grid-template-columns: 150px minmax(0, 1fr); }
+    .resultado-pagina .indicador-confianca { width: 150px; }
+    .resultado-pagina .grade-detalhes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+    .st-key-tela_resultado { margin-top: 1rem; }
+    .resultado-pagina.resultado-analise h1 { margin-bottom: 1.5rem; }
+    .resultado-pagina .card-resultado { grid-template-columns: minmax(0, 1fr); }
+    .resultado-pagina .descricao-resultado h2 { margin-top: 1rem; }
+    .resultado-pagina .detalhe-analise { padding: 1rem; border-radius: 16px; }
+    .resultado-pagina .aviso-resultado, .resultado-pagina .distribuicao-predicoes { padding: 1rem; }
+}
+
+/* Escopo pr?prio do HTML: n?o depende dos cont?ineres internos do Streamlit. */
+.resultado-pagina { width: 100%; max-width: 900px; margin: 0 auto; box-sizing: border-box; color: var(--cor-texto); }
+.resultado-pagina *, .resultado-pagina *::before, .resultado-pagina *::after { box-sizing: border-box; }
+.resultado-pagina :is(p, span, a) { font-family: var(--fonte-interface); }
+.resultado-pagina .numero-confianca { font-family: var(--fonte-mono); }
+.resultado-pagina .rotulo-predicao span:last-child { font-family: var(--fonte-mono); }
+@media (max-width: 480px) {
+    .resultado-pagina .grade-detalhes { grid-template-columns: 1fr; }
+}

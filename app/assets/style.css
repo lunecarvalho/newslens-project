@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+/* Variaveis */
+:root {
+    --fonte-titulo: 'DM Serif Display', Georgia, serif;
+    --fonte-interface: 'Outfit', Arial, sans-serif;
+    --fonte-mono: 'DM Mono', monospace;
+    --cor-superficie: #ffffff;
+    --cor-destaque: #e8f0fc;
+    --cor-seletor: #eff3f8;
+    --cor-botao: #99b4d7;
+    --cor-botao-hover: #789bc9;
+    --cor-foco: #91b3e8;
+    --sombra-suave: 0 1px 5px #24354d14;
+    --cor-primaria: #205bad;
+    --cor-texto: #10151c;
+    --cor-texto-secundario: #687e9c;
+    --cor-borda: #d9e2ef;
+    --cor-fundo: #f5f7fa;
+}
+
+/* Layout geral */
+.stApp { background: var(--cor-fundo); color: var(--cor-texto); color-scheme: light; }
+[data-testid="stHeader"] { visibility: hidden; }
+.stAppDeployButton, #MainMenu { display: none; }
+[data-testid="stMainBlockContainer"] { max-width: none; padding: 0 0 4rem; }
+
+/* Splash */
+.abertura {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    display: grid;
+    place-items: center;
+    background: var(--cor-fundo);
+    text-align: center;
+    padding: 1.5rem;
+}
+.abertura .icone { display: block; width: 68px; height: 68px; color: var(--cor-primaria); margin: 0 auto 1rem; }
+.abertura h1 { font: 400 clamp(3.5rem, 9vw, 5rem)/1.15 var(--fonte-titulo); color: var(--cor-primaria); padding: 0; margin: 0; letter-spacing: -.035em; }
+.abertura p { color: var(--cor-texto-secundario); font-size: clamp(.6rem, 2vw, .875rem); font-weight: 300; letter-spacing: .3em; margin: 1.3rem 0 0; }
+
+/* Header */
+.cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; min-height: 55px; box-sizing: border-box; padding: .3rem 2.5rem; border-bottom: 1px solid var(--cor-borda); }
+.cabecalho .marca { display: inline-flex; align-items: center; gap: .6rem; color: var(--cor-primaria); text-decoration: none; font: 400 1.25rem var(--fonte-titulo); }
+.marca .icone { width: 25px; height: 25px; }
+.cabecalho nav { display: flex; align-items: center; gap: .25rem; font-size: .8125rem; }
+.cabecalho nav a, .cabecalho nav span { padding: .55rem 1rem; color: var(--cor-texto-secundario); text-decoration: none; }
+.cabecalho nav .selecionado { background: var(--cor-destaque); color: var(--cor-primaria); border-radius: 999px; font-weight: 600; }
+.cabecalho [aria-disabled="true"] { cursor: default; }
+.cabecalho a:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 4px; }
+
+/* Conteudo principal */
+.st-key-conteudo_principal { width: min(704px, calc(100% - 2rem)); max-width: 704px; margin-inline: auto; }
+.introducao { text-align: center; padding: 2rem 0 2.6rem; }
+.introducao h1 { font: 400 clamp(2rem, 5vw, 3rem)/1.2 var(--fonte-titulo); color: var(--cor-texto); padding: 0; margin: 0 0 1.2rem; letter-spacing: -.025em; }
+.introducao p { color: var(--cor-texto-secundario); font-size: 1rem; line-height: 1.75; max-width: 470px; margin: 0 auto; }
+
+/* Abas */
+.st-key-conteudo_principal [role="tablist"] { width: fit-content; max-width: 100%; margin-inline: auto; gap: .2rem; background: var(--cor-seletor); padding: .2rem; border-radius: 999px; }
+.st-key-conteudo_principal [role="tab"] { flex: 0 1 auto; min-width: 130px; height: 2.3rem; padding-inline: 1rem; border-radius: 999px; color: var(--cor-texto-secundario); }
+.st-key-conteudo_principal [role="tab"][aria-selected="true"] { background: var(--cor-superficie); color: var(--cor-primaria); box-shadow: var(--sombra-suave); }
+.st-key-conteudo_principal [data-baseweb="tab-highlight"],
+.st-key-conteudo_principal [data-baseweb="tab-border"] { display: none; }
+/* Formulario */
+.st-key-conteudo_principal [data-testid="stForm"],
+.st-key-conteudo_principal .st-key-cartao_url { background: var(--cor-superficie); border-color: var(--cor-borda); border-radius: 16px; }
+.st-key-conteudo_principal [data-testid="stForm"], .st-key-cartao_url { padding: 1.5rem; }
+.st-key-conteudo_principal [data-testid="stWidgetLabel"] p { color: var(--cor-texto-secundario); font-size: .75rem; font-weight: 500; letter-spacing: .015em; }
+.st-key-conteudo_principal [data-baseweb="textarea"] { background: var(--cor-superficie); border-color: var(--cor-borda); border-radius: 18px; }
+.st-key-conteudo_principal textarea { color: var(--cor-texto); background: var(--cor-superficie); line-height: 1.7; font-size: .875rem; }
+.st-key-conteudo_principal textarea::placeholder { color: var(--cor-texto-secundario); }
+.st-key-conteudo_principal [data-testid="stFormSubmitButton"] button, .st-key-cartao_url button { background: var(--cor-botao); border: 1px solid var(--cor-botao); color: var(--cor-superficie); min-height: 3rem; border-radius: 999px; margin-top: 0; }
+.st-key-conteudo_principal [data-testid="stFormSubmitButton"] button:hover { background: var(--cor-botao-hover); border-color: var(--cor-botao-hover); }
+.st-key-conteudo_principal [data-testid="stFormSubmitButton"] button:focus-visible { outline: 3px solid var(--cor-foco); outline-offset: 3px; }
+
+/* Cards */
+.cards-informativos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+.card-informativo { background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: 24px; padding: 1.25rem; min-height: 176px; box-sizing: border-box; }
+.icone-card { display: grid; place-items: center; background: var(--cor-destaque); color: var(--cor-primaria); width: 40px; height: 40px; border-radius: 15px; margin-bottom: .8rem; }
+.icone-card .icone { width: 21px; height: 21px; }
+.card-informativo h2 { font: 400 .875rem/1.4 var(--fonte-interface); color: var(--cor-texto); padding: 0; margin: 0 0 .4rem; }
+.card-informativo p { font-size: .75rem; line-height: 1.65; color: var(--cor-texto-secundario); margin: 0; }
+
+/* Responsividade */
+@media (max-width: 640px) {
+    [data-testid="stMainBlockContainer"] { padding: 0 0 2rem; }
+    .cabecalho { flex-wrap: wrap; gap: .5rem; padding: .65rem 1rem; }
+    .cabecalho nav { gap: 0; }
+    .cabecalho nav a, .cabecalho nav span { padding: .5rem .6rem; }
+    .introducao { padding-top: 2rem; }
+    .cards-informativos { grid-template-columns: 1fr; margin-top: 1.5rem; }
+    .card-informativo { min-height: auto; }
+    .st-key-conteudo_principal [data-testid="stForm"] { padding: 1rem; }
+}
+
+/* Sem alterar o comportamento dos widgets nativos. */
+.st-key-conteudo_principal [role="tabpanel"] { padding-top: 1.25rem; }
+.st-key-conteudo_principal [role="tab"] p { font-size: .8125rem; }
+.st-key-conteudo_principal [data-testid="stFormSubmitButton"] button p, .st-key-cartao_url button p { font-size: .875rem; font-weight: 600; }
+.st-key-cartao_url [data-baseweb="input"] { border-radius: 999px; background: var(--cor-superficie); border-color: var(--cor-borda); min-height: 48px; }
+@media (max-width: 380px) {
+    .cabecalho { justify-content: center; }
+    .cabecalho nav { justify-content: center; width: 100%; }
+    .st-key-conteudo_principal [role="tab"] { min-width: 0; padding-inline: .8rem; }
+}
+
+/* Tipografia da interface; preserva a fonte dos icones Material. */
+.stApp { font-family: var(--fonte-interface); }
+.stApp :is(p, a, label, input, textarea, button, li) { font-family: var(--fonte-interface); }
+.stApp :is(code, pre, kbd) { font-family: var(--fonte-mono); }
+.icone { display: block; flex-shrink: 0; object-fit: contain; }
+.cabecalho nav { font-family: var(--fonte-interface); font-weight: 500; }
+.cabecalho .marca { font-family: var(--fonte-titulo); }
+.card-informativo p { font-weight: 300; }
+.st-key-conteudo_principal [data-testid="stWidgetLabel"] p { font-weight: 400; }
+.st-key-conteudo_principal [role="tab"] { border: 0; }
+.st-key-conteudo_principal [role="tablist"] { border: 0; }
+.st-key-conteudo_principal [role="tablist"]::after,
+.st-key-conteudo_principal [role="tab"] .react-aria-SelectionIndicator { display: none; }
+.st-key-conteudo_principal :is([data-testid="stTabHighlight"], [data-testid="stTabBorder"]) { display: none; }
+.st-key-cartao_url input { font-size: .875rem; background: var(--cor-superficie); }
+.st-key-cartao_url input:disabled { -webkit-text-fill-color: var(--cor-texto-secundario); opacity: 1; }
+.st-key-cartao_url input::placeholder { color: var(--cor-texto-secundario); opacity: 1; }
+.st-key-cartao_url button:disabled { opacity: 1; cursor: not-allowed; }
+
+/* Resultado: preserva as cores semanticas dos avisos do Streamlit. */
+.st-key-conteudo_principal h3 { font-family: var(--fonte-titulo); font-weight: 400; }
+.st-key-conteudo_principal [data-testid="stCaptionContainer"] p { line-height: 1.6; }

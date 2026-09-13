@@ -1,41 +1,142 @@
+﻿from pathlib import Path
+import time
+from base64 import b64encode
+
 import streamlit as st
 
-from model import classificar_noticia
 
-st.set_page_config(
-    page_title="NewsLens",
-    page_icon="📰",
-    layout="centered"
-)
+st.set_page_config(page_title="NewsLens", page_icon=":material/search:", layout="wide")
 
-st.title("NewsLens")
 
-st.write(
-    "Analise padrões linguísticos de uma notícia "
-    "utilizando Inteligência Artificial."
-)
+def carregar_estilos():
+    caminho_estilos = Path(__file__).parent / "assets" / "style.css"
+    st.html(f"<style>{caminho_estilos.read_text(encoding='utf-8')}</style>")
 
-texto = st.text_area(
-    "Insira o texto da notícia:",
-    height=250,
-    placeholder="Cole aqui o conteúdo da notícia..."
-)
 
-if st.button("Analisar notícia"):
-    if not texto.strip():
-        st.warning("Insira um texto antes de realizar a análise.")
-    else:
-        with st.spinner("Analisando notícia..."):
-            resultado = classificar_noticia(texto)
+def criar_icone(nome):
+    desenhos = {
+        "lupa": '<circle cx="10.5" cy="10.5" r="3.5" fill="#d5e5f4" stroke="none"/><circle cx="10.5" cy="10.5" r="7" stroke-width="1.9"/><path d="m16 16 5 5" stroke="#2272ca" stroke-width="2.2"/>',
+        "ia": '<path d="M12 5c-2-4-6-2-6 1-3 0-4 4-2 6-2 3 0 6 3 6 0 4 5 4 5 0V5Zm0 0c2-4 6-2 6 1 3 0 4 4 2 6 2 3 0 6-3 6 0 4-5 4-5 0M6 6l2 2m-4 4h3m0 6 1-3m10-9-2 2m4 4h-3m0 6-1-3"/>',
+        "texto": '<path d="M5 3h9l5 5v13H5zM14 3v5h5M8 12h8m-8 4h8M8 8h2"/>',
+        "classificacao": '<path d="M4 3v17h17M7 13l4-5 4 4 5-5"/>',
+    }
+    desenho_svg = (
+        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2064b6" '
+        'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" '
+        f'aria-hidden="true">{desenhos[nome]}</svg>'
+    )
+    # Preserva o SVG ao passar pela sanitização do HTML do Streamlit.
+    imagem_codificada = b64encode(desenho_svg.encode("utf-8")).decode("ascii")
+    return f'<img class="icone" src="data:image/svg+xml;base64,{imagem_codificada}" alt="" aria-hidden="true">'
 
-        st.subheader("Resultado")
 
-        if resultado == "Falsa":
-            st.error("Possivelmente falsa")
-        else:
-            st.success("Possivelmente verdadeira")
+def exibir_abertura():
+    if not st.session_state.get("tela_abertura_exibida", False):
+        st.html(f'''
+            <section class="abertura" aria-label="Bem-vindo ao NewsLens">
+                <div class="abertura-conteudo">
+                    {criar_icone("lupa")}
+                    <h1>NewsLens</h1>
+                    <p>ANALISE · ENTENDA · VERIFIQUE</p>
+                </div>
+            </section>
+        ''')
+        time.sleep(2)
+        st.session_state.tela_abertura_exibida = True
+        st.rerun()
 
-        st.caption(
-            "O resultado representa uma classificação do modelo "
-            "e não substitui uma verificação factual em fontes confiáveis."
-        )
+
+def exibir_cabecalho():
+    st.html(f'''
+        <header class="cabecalho">
+            <a class="marca" href="#inicio" aria-label="NewsLens — Início">
+                {criar_icone("lupa")}<span>NewsLens</span>
+            </a>
+            <nav aria-label="Navegação principal">
+                <a class="selecionado" href="#inicio" aria-current="page">Início</a>
+                <span aria-disabled="true" title="Em breve">Histórico</span>
+                <span aria-disabled="true" title="Em breve">Sobre</span>
+            </nav>
+        </header>
+    ''')
+
+
+def exibir_formulario():
+    aba_url, aba_texto = st.tabs(
+        ["URL da notícia", "Texto da notícia"], default="Texto da notícia"
+    )
+    with aba_url:
+        with st.container(border=True, key="cartao_url"):
+            st.text_input(
+                "URL DA NOTÍCIA", placeholder="https://exemplo.com/noticia",
+                disabled=True, icon=":material/language:",
+            )
+            st.button(
+                "Analisar URL", disabled=True, type="primary", width="stretch",
+                help="Em breve", icon=":material/arrow_forward:", icon_position="right",
+            )
+    with aba_texto:
+        with st.form("formulario_noticia", border=True):
+            texto_noticia = st.text_area(
+                "TEXTO DA NOTÍCIA",
+                height=230,
+                placeholder="Cole aqui o texto da notícia que deseja analisar...",
+                key="texto_noticia",
+            )
+            analisar = st.form_submit_button(
+                "Analisar notícia", type="primary", width="stretch"
+            )
+        if analisar:
+            st.session_state.pop("resultado", None)
+            if not texto_noticia.strip():
+                st.warning("Insira o texto da notícia para iniciar a análise.")
+            else:
+                try:
+                    with st.spinner("Analisando notícia..."):
+                        # Carrega o modelo apenas quando a primeira análise é solicitada.
+                        from model import classificar_noticia
+
+                        st.session_state.resultado = classificar_noticia(texto_noticia)
+                except Exception:
+                    st.error("Não foi possível concluir a análise. Tente novamente em instantes.")
+        if "resultado" in st.session_state:
+            st.subheader("Resultado da classificação")
+            resultado = st.session_state.resultado
+            if resultado == "Falsa":
+                st.warning("Possivelmente falsa")
+            elif resultado == "Verdadeira":
+                st.success("Possivelmente verdadeira")
+            else:
+                st.error("O modelo retornou uma classificação não reconhecida.")
+            st.caption(
+                "O resultado representa uma classificação realizada por um modelo de "
+                "inteligência artificial e não substitui a verificação factual em fontes confiáveis."
+            )
+
+
+def exibir_cards_informativos():
+    informacoes = [
+        ("ia", "Análise com IA", "Processamento automatizado com modelos de linguagem modernos."),
+        ("texto", "Análise linguística", "Identificação de padrões e marcadores presentes no texto."),
+        ("classificacao", "Resultado probabilístico", "Classificação acompanhada do nível de confiança do modelo."),
+    ]
+    cards = "".join(
+        f'<article class="card-informativo"><div class="icone-card">{criar_icone(icone)}</div>'
+        f'<h2>{titulo}</h2><p>{descricao}</p></article>'
+        for icone, titulo, descricao in informacoes
+    )
+    st.html(f'<section class="cards-informativos" aria-label="Como funciona">{cards}</section>')
+
+
+carregar_estilos()
+exibir_abertura()
+exibir_cabecalho()
+with st.container(key="conteudo_principal"):
+    st.html('''
+        <section class="introducao" id="inicio">
+            <h1>Analise uma notícia</h1>
+            <p>Insira o texto ou a URL da notícia para verificar a veracidade do conteúdo com IA.</p>
+        </section>
+    ''')
+    exibir_formulario()
+    exibir_cards_informativos()

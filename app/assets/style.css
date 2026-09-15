@@ -23,7 +23,7 @@
 .stApp { background: var(--cor-fundo); color: var(--cor-texto); color-scheme: light; }
 [data-testid="stHeader"] { visibility: hidden; }
 .stAppDeployButton, #MainMenu { display: none; }
-[data-testid="stMainBlockContainer"] { max-width: none; padding: 0 0 4rem; }
+[data-testid="stMainBlockContainer"] { max-width: none; padding: 0; }
 
 /* Splash */
 .abertura {
@@ -52,8 +52,8 @@
 
 /* Conteudo principal */
 .st-key-conteudo_principal { width: min(704px, calc(100% - 2rem)); max-width: 704px; margin-inline: auto; }
-.introducao { text-align: center; padding: 2rem 0 2.6rem; }
-.introducao h1 { font: 400 clamp(2rem, 5vw, 3rem)/1.2 var(--fonte-titulo); color: var(--cor-texto); padding: 0; margin: 0 0 1.2rem; letter-spacing: -.025em; }
+.introducao { text-align: center; padding: 2rem 0 1.5rem; }
+.introducao h1 { font: 400 clamp(2rem, 5vw, 3rem)/1.2 var(--fonte-titulo); color: #282f3a; padding: 0; margin: 0 0 1.2rem; letter-spacing: -.025em; }
 .introducao p { color: var(--cor-texto-secundario); font-size: 1rem; line-height: 1.75; max-width: 470px; margin: 0 auto; }
 
 /* Abas */
@@ -75,27 +75,31 @@
 .st-key-conteudo_principal [data-testid="stFormSubmitButton"] button:focus-visible { outline: 3px solid var(--cor-foco); outline-offset: 3px; }
 
 /* Cards */
-.cards-informativos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+.cards-informativos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: .5rem; }
 .card-informativo { background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: 24px; padding: 1.25rem; min-height: 176px; box-sizing: border-box; }
 .icone-card { display: grid; place-items: center; background: var(--cor-destaque); color: var(--cor-primaria); width: 40px; height: 40px; border-radius: 15px; margin-bottom: .8rem; }
 .icone-card .icone { width: 21px; height: 21px; }
-.card-informativo h2 { font: 400 .875rem/1.4 var(--fonte-interface); color: var(--cor-texto); padding: 0; margin: 0 0 .4rem; }
+.card-informativo h2 { font: 400 .875rem/1.4 var(--fonte-interface); color: #282f3a; padding: 0; margin: 0 0 .4rem; }
 .card-informativo p { font-size: .75rem; line-height: 1.65; color: var(--cor-texto-secundario); margin: 0; }
+
+/* Rodape comum da interface */
+.rodape { width: 100%; box-sizing: border-box; margin: .5rem 0 0; padding: .7rem; color: var(--cor-texto-secundario); font: 400 8px var(--fonte-interface); letter-spacing: 3px; text-align: start; text-transform: uppercase; }
 
 /* Responsividade */
 @media (max-width: 640px) {
-    [data-testid="stMainBlockContainer"] { padding: 0 0 2rem; }
+    [data-testid="stMainBlockContainer"] { padding: 0; }
     .cabecalho { flex-wrap: wrap; gap: .5rem; padding: .65rem 1rem; }
     .cabecalho nav { gap: 0; }
     .cabecalho nav a, .cabecalho nav span { padding: .5rem .6rem; }
     .introducao { padding-top: 2rem; }
-    .cards-informativos { grid-template-columns: 1fr; margin-top: 1.5rem; }
+    .cards-informativos { grid-template-columns: 1fr; margin-top: .5rem; }
+    .rodape { padding: .75rem .5rem; }
     .card-informativo { min-height: auto; }
     .st-key-conteudo_principal [data-testid="stForm"] { padding: 1rem; }
 }
 
 /* Sem alterar o comportamento dos widgets nativos. */
-.st-key-conteudo_principal [role="tabpanel"] { padding-top: 1.25rem; }
+.st-key-conteudo_principal [role="tabpanel"] { padding-top: 1.2rem; padding-bottom: 3rem;}
 .st-key-conteudo_principal [role="tab"] p { font-size: .8125rem; }
 .st-key-conteudo_principal [data-testid="stFormSubmitButton"] button p, .st-key-cartao_url button p { font-size: .875rem; font-weight: 600; }
 .st-key-cartao_url [data-baseweb="input"] { border-radius: 999px; background: var(--cor-superficie); border-color: var(--cor-borda); min-height: 48px; }

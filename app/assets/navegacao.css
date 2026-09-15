@@ -1,15 +1,15 @@
 /* Botões nativos no header compartilhado, com a aparência do menu. */
-.st-key-cabecalho_navegavel { min-height: 55px; padding: .3rem 2.5rem; border-bottom: 1px solid var(--cor-borda); gap: 1.5rem; }
+.st-key-cabecalho_navegavel { min-height: 45px; padding: 0 2.5rem; border-bottom: 1px solid var(--cor-borda); gap: 1.5rem; }
 .st-key-cabecalho_navegavel .marca-navegavel { display: inline-flex; align-items: center; gap: .6rem; color: var(--cor-primaria); font: 400 1.25rem var(--fonte-titulo); white-space: nowrap; }
 .st-key-cabecalho_navegavel .marca-navegavel img { width: 25px; height: 25px; }
-.st-key-cabecalho_navegavel button { border: 0; border-radius: 999px; padding: .55rem 1rem; min-height: 0; color: var(--cor-texto-secundario); background: transparent; }
-.st-key-cabecalho_navegavel button p { font: 400 .8125rem var(--fonte-interface); }
+.st-key-cabecalho_navegavel button { display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 999px; padding: .55rem 1rem; min-height: 0; color: var(--cor-texto-secundario); background: transparent; line-height: 1; }
+.st-key-cabecalho_navegavel button p { margin: 0; font: 400 .8125rem/1 var(--fonte-interface); }
 .st-key-cabecalho_navegavel .st-key-menu_inicio .st-key-navegar_inicio button,
 .st-key-cabecalho_navegavel .st-key-menu_sobre .st-key-navegar_sobre button { background: var(--cor-destaque); color: var(--cor-primaria); }
 .st-key-cabecalho_navegavel .st-key-menu_inicio .st-key-navegar_inicio button p,
 .st-key-cabecalho_navegavel .st-key-menu_sobre .st-key-navegar_sobre button p { font-weight: 600; }
 .st-key-cabecalho_navegavel button:focus-visible { outline: 2px solid var(--cor-foco); outline-offset: 2px; }
 @media (max-width: 640px) {
-    .st-key-cabecalho_navegavel { padding: .65rem 1rem; gap: .5rem; }
+    .st-key-cabecalho_navegavel { padding: .25rem 1rem; gap: .5rem; }
     .st-key-cabecalho_navegavel button { padding: .5rem .6rem; }
 }

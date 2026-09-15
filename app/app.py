@@ -1,7 +1,6 @@
 from pathlib import Path
 import time
 from base64 import b64encode
-
 import streamlit as st
 from sobre import exibir_pagina_sobre
 
@@ -22,7 +21,7 @@ def carregar_estilos():
     st.html(f"<style>{caminho_estilos.read_text(encoding='utf-8')}</style>")
 
 
-def criar_icone(nome):
+def criar_icone(nome, classe="icone"):
     desenhos = {
         "lupa": '<circle cx="10.5" cy="10.5" r="3.5" fill="#d5e5f4" stroke="none"/><circle cx="10.5" cy="10.5" r="7" stroke-width="1.9"/><path d="m16 16 5 5" stroke="#2272ca" stroke-width="2.2"/>',
         "ia": '<path d="M12 5c-2-4-6-2-6 1-3 0-4 4-2 6-2 3 0 6 3 6 0 4 5 4 5 0V5Zm0 0c2-4 6-2 6 1 3 0 4 4 2 6 2 3 0 6-3 6 0 4-5 4-5 0M6 6l2 2m-4 4h3m0 6 1-3m10-9-2 2m4 4h-3m0 6-1-3"/>',
@@ -35,7 +34,7 @@ def criar_icone(nome):
         f'aria-hidden="true">{desenhos[nome]}</svg>'
     )
     imagem_codificada = b64encode(desenho_svg.encode("utf-8")).decode("ascii")
-    return f'<img class="icone" src="data:image/svg+xml;base64,{imagem_codificada}" alt="" aria-hidden="true">'
+    return f'<img class="{classe}" src="data:image/svg+xml;base64,{imagem_codificada}" alt="" aria-hidden="true">'
 
 
 def exibir_abertura():
@@ -112,10 +111,14 @@ def exibir_cards_informativos():
     ]
     cards = "".join(
         f'<article class="card-informativo"><div class="icone-card">{criar_icone(icone)}</div>'
-        f'<h2>{titulo}</h2><p>{descricao}</p></article>'
+        f'<h2><strong>{titulo}</strong></h2><p>{descricao}</p></article>'
         for icone, titulo, descricao in informacoes
     )
     st.html(f'<section class="cards-informativos" aria-label="Como funciona">{cards}</section>')
+
+
+def exibir_rodape():
+    st.html('<footer class="rodape">NewsLens · Projeto Integrador IV · UNIVESP · 2026</footer>')
 
 
 carregar_estilos()
@@ -124,7 +127,7 @@ if st.session_state.get("pagina_atual", "inicio") == "resultado":
     exibir_tela_resultado(st.session_state.resultado_analise)
 elif st.session_state.get("pagina_atual") == "sobre":
     exibir_cabecalho()
-    exibir_pagina_sobre(criar_icone("lupa"), navegar_para)
+    exibir_pagina_sobre(criar_icone("lupa", "sobre-titulo-icone"), navegar_para)
 elif st.session_state.get("pagina_atual") == "analisando":
     inicio_analise = time.perf_counter()
     exibir_cabecalho()
@@ -157,3 +160,5 @@ else:
             st.error("Não foi possível concluir a análise. Tente novamente em instantes.")
         exibir_formulario()
         exibir_cards_informativos()
+
+exibir_rodape()

@@ -1,0 +1,6 @@
+# Dependências da aplicação Streamlit (os notebooks têm ambientes próprios).
+streamlit
+torch
+transformers
+trafilatura>=2.0,<3
+urllib3>=2.0,<3

@@ -3,6 +3,7 @@ import time
 from base64 import b64encode
 import streamlit as st
 from sobre import exibir_pagina_sobre
+import extrator_noticia
 
 from componentes import (
     exibir_tela_analisando,
@@ -74,14 +75,26 @@ def exibir_formulario():
     )
     with aba_url:
         with st.container(border=True, key="cartao_url"):
-            st.text_input(
+            url_noticia = st.text_input(
                 "URL DA NOTÍCIA", placeholder="https://exemplo.com/noticia",
-                disabled=True, icon=":material/language:",
+                key="url_noticia", icon=":material/language:",
             )
-            st.button(
-                "Analisar URL", disabled=True, type="primary", width="stretch",
-                help="Em breve", icon=":material/arrow_forward:", icon_position="right",
+            analisar_url = st.button(
+                "Analisar URL", type="primary", width="stretch",
+                icon=":material/arrow_forward:", icon_position="right",
             )
+        if analisar_url:
+            st.session_state.pop("resultado_analise", None)
+            try:
+                url_validada = extrator_noticia.validar_url(url_noticia)
+            except extrator_noticia.ErroExtracao as erro:
+                st.warning(str(erro))
+            else:
+                st.session_state.pop("texto_analisado", None)
+                st.session_state.url_analisada = url_validada
+                st.session_state.metodo_analise = "url"
+                st.session_state.pagina_atual = "analisando"
+                st.rerun()
     with aba_texto:
         with st.form("formulario_noticia", border=True):
             texto_noticia = st.text_area(
@@ -98,6 +111,8 @@ def exibir_formulario():
             if not texto_noticia.strip():
                 st.warning("Insira o texto da notícia para iniciar a análise.")
             else:
+                st.session_state.pop("url_analisada", None)
+                st.session_state.metodo_analise = "texto"
                 st.session_state.texto_analisado = texto_noticia
                 st.session_state.pagina_atual = "analisando"
                 st.rerun()
@@ -133,19 +148,27 @@ elif st.session_state.get("pagina_atual") == "analisando":
     exibir_cabecalho()
     exibir_tela_analisando(criar_icone("lupa"))
     try:
+        if st.session_state.get("metodo_analise", "texto") == "url":
+            noticia = extrator_noticia.extrair_noticia_url(st.session_state.url_analisada)
+            st.session_state.texto_analisado = noticia["texto"]
+
         from model import classificar_noticia
 
         resultado_analise = classificar_noticia(st.session_state.texto_analisado)
+    except extrator_noticia.ErroExtracao as erro:
+        st.session_state.erro_analise = str(erro)
+        st.session_state.pagina_atual = "inicio"
     except Exception:
-        st.session_state.erro_analise = True
+        st.session_state.erro_analise = "Não foi possível concluir a análise. Tente novamente em instantes."
         st.session_state.pagina_atual = "inicio"
     else:
+        st.session_state.resultado_analise = resultado_analise
+        st.session_state.pagina_atual = "resultado"
+    finally:
         tempo_decorrido = time.perf_counter() - inicio_analise
         tempo_restante = max(0.0, DURACAO_MINIMA_ANALISE - tempo_decorrido)
         if tempo_restante > 0:
             time.sleep(tempo_restante)
-        st.session_state.resultado_analise = resultado_analise
-        st.session_state.pagina_atual = "resultado"
     st.rerun()
 else:
     exibir_cabecalho()
@@ -156,8 +179,9 @@ else:
                 <p>Insira o texto ou a URL da notícia para verificar a veracidade do conteúdo com IA.</p>
             </section>
         ''')
-        if st.session_state.pop("erro_analise", False):
-            st.error("Não foi possível concluir a análise. Tente novamente em instantes.")
+        erro_analise = st.session_state.pop("erro_analise", None)
+        if erro_analise:
+            st.error(erro_analise)
         exibir_formulario()
         exibir_cards_informativos()
 

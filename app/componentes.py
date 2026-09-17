@@ -68,7 +68,7 @@ def criar_indicador_confianca(confianca, estado):
 def criar_detalhes_analise(resultado):
     detalhes = [
         ("Confiança", formatar_percentual(resultado["confianca"])),
-        ("Método", "Análise de texto"),
+        ("Método", "Análise de URL" if st.session_state.get("metodo_analise") == "url" else "Análise de texto"),
         ("Processamento", "NLP + ML"),
     ]
     cards = "".join(
@@ -116,7 +116,8 @@ def criar_aviso():
 
 
 def nova_analise():
-    for chave in ("resultado_analise", "texto_analisado", "texto_noticia", "resultado"):
+    for chave in ("resultado_analise", "texto_analisado", "texto_noticia", "resultado",
+                  "url_noticia", "url_analisada", "metodo_analise", "erro_analise"):
         st.session_state.pop(chave, None)
     st.session_state.pagina_atual = "inicio"
 

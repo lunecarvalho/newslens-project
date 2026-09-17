@@ -8,7 +8,6 @@
 .st-key-cabecalho_navegavel .st-key-menu_sobre .st-key-navegar_sobre button { background: var(--cor-destaque); color: var(--cor-primaria); }
 .st-key-cabecalho_navegavel .st-key-menu_inicio .st-key-navegar_inicio button p,
 .st-key-cabecalho_navegavel .st-key-menu_sobre .st-key-navegar_sobre button p { font-weight: 600; }
-.st-key-cabecalho_navegavel button:focus-visible { outline: 2px solid var(--cor-foco); outline-offset: 2px; }
 @media (max-width: 640px) {
     .st-key-cabecalho_navegavel { padding: .25rem 1rem; gap: .5rem; }
     .st-key-cabecalho_navegavel button { padding: .5rem .6rem; }

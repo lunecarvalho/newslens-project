@@ -265,6 +265,38 @@ model = AutoModelForSequenceClassification.from_pretrained(
 
 ## Tecnologias
 
+### Entrada de notícias na aplicação
+
+O NewsLens aceita texto inserido manualmente e URL de uma página de notícia.
+No caso de URL, a aplicação extrai o conteúdo textual da página e o envia ao
+mesmo modelo de classificação utilizado na análise manual. Trata-se de classificação
+textual, não de verificação factual ou avaliação da reputação do domínio.
+
+O módulo `app/extrator_noticia.py` usa Trafilatura para obter o conteúdo principal
+e, quando disponíveis, título, autor e data. Textos vazios ou claramente insuficientes
+não são classificados. Sites com login, paywall, bloqueios ou conteúdo dependente de
+JavaScript podem não permitir a extração; não há tentativa de contornar essas restrições.
+
+São aceitas URLs HTTP/HTTPS sem credenciais. Todos os IPs retornados pelo DNS precisam
+ser públicos, e a conexão utiliza o IP validado, mantendo Host e validação TLS do domínio.
+Cada redirect é validado novamente (máximo de três). O download aceita HTML/XHTML/texto,
+limita o corpo a 3 MiB e usa timeouts de DNS, conexão e leitura de 5 segundos, com orçamento
+de 25 segundos para o download e verificações entre leituras. Uma leitura em andamento
+pode consumir até seu timeout. Compressão não solicitada é recusada.
+
+Não há cache de artigos, histórico, banco de dados ou persistência permanente de URL/texto.
+O conteúdo permanece apenas em memória durante a sessão; “Nova análise” limpa o estado
+da análise anterior. O modelo e seu truncamento em 512 tokens permanecem iguais.
+
+Instale as dependências da aplicação com `pip install -r requirements.txt`.
+Se Trafilatura ainda não estiver instalada, execute `pip install trafilatura`.
+Os testes usam `unittest`, incluído no Python: `python -m unittest discover -s tests -v`.
+As respostas HTTP são simuladas; a integração usa Streamlit AppTest e um classificador
+simulado, sem baixar pesos ou depender de sites reais.
+
+Referências de implementação: [extração com Trafilatura](https://trafilatura.readthedocs.io/en/latest/corefunctions.html)
+e [conexão HTTPS por IP com hostname preservado](https://urllib3.readthedocs.io/en/stable/advanced-usage.html#custom-sni-hostname).
+
 O projeto utiliza principalmente:
 
 ### Linguagem
@@ -386,7 +418,6 @@ Os resultados devem, portanto, ser utilizados como apoio à análise e não como
 Entre as próximas etapas do projeto estão:
 
 - integração do modelo com Streamlit;
-- desenvolvimento da interface do NewsLens;
 - análise de notícias inseridas pelo usuário;
 - avaliação com dados externos;
 - análise de explicabilidade do modelo;

@@ -71,8 +71,23 @@
 .st-key-conteudo_principal textarea { color: var(--cor-texto); background: var(--cor-superficie); line-height: 1.7; font-size: .875rem; }
 .st-key-conteudo_principal textarea::placeholder { color: var(--cor-texto-secundario); }
 .st-key-conteudo_principal [data-testid="stFormSubmitButton"] button, .st-key-cartao_url button { background: var(--cor-botao); border: 1px solid var(--cor-botao); color: var(--cor-superficie); min-height: 3rem; border-radius: 999px; margin-top: 0; }
-.st-key-conteudo_principal [data-testid="stFormSubmitButton"] button:hover { background: var(--cor-botao-hover); border-color: var(--cor-botao-hover); }
-.st-key-conteudo_principal [data-testid="stFormSubmitButton"] button:focus-visible { outline: 3px solid var(--cor-foco); outline-offset: 3px; }
+.st-key-cartao_url button:hover,
+[data-testid="stFormSubmitButton"] button:hover,
+.st-key-cartao_url button:active,
+[data-testid="stFormSubmitButton"] button:active { background: var(--cor-botao-hover) !important; border-color: var(--cor-botao-hover) !important; color: var(--cor-superficie) !important; }
+.st-key-cartao_url button:focus,
+[data-testid="stFormSubmitButton"] button:focus,
+.st-key-cartao_url button:focus-visible,
+[data-testid="stFormSubmitButton"] button:focus-visible { outline: 3px solid var(--cor-foco) !important; outline-offset: 3px; box-shadow: 0 0 0 1px var(--cor-foco) !important; }
+.st-key-cartao_url [data-testid="stTextInputRootElement"] { border-color: var(--cor-borda); }
+.st-key-cartao_url [data-testid="stTextInputRootElement"]:hover { border-color: var(--cor-foco) !important; }
+.st-key-cartao_url [data-testid="stTextInputRootElement"]:focus-within { border-color: var(--cor-primaria) !important; box-shadow: 0 0 0 1px var(--cor-primaria) !important; }
+.st-key-cartao_url [data-testid="stTextInputField"]:hover { border-color: var(--cor-foco) !important; }
+.st-key-cartao_url [data-testid="stTextInputField"]:focus,
+.st-key-cartao_url [data-testid="stTextInputField"]:focus-visible { border-color: var(--cor-primaria) !important; box-shadow: 0 0 0 1px var(--cor-primaria) !important; }
+[data-testid="stTextAreaRootElement"] { border-color: var(--cor-borda); }
+[data-testid="stTextAreaRootElement"]:hover { border-color: var(--cor-foco) !important; }
+[data-testid="stTextAreaRootElement"]:focus-within { border-color: var(--cor-primaria) !important; box-shadow: 0 0 0 1px var(--cor-primaria) !important; }
 
 /* Cards */
 .cards-informativos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: .5rem; }
@@ -81,6 +96,20 @@
 .icone-card .icone { width: 21px; height: 21px; }
 .card-informativo h2 { font: 400 .875rem/1.4 var(--fonte-interface); color: #282f3a; padding: 0; margin: 0 0 .4rem; }
 .card-informativo p { font-size: .75rem; line-height: 1.65; color: var(--cor-texto-secundario); margin: 0; }
+
+/* Estados azuis dos botoes secundarios e de navegacao. */
+.st-key-sobre_container .st-key-sobre_voltar button:hover,
+.st-key-tela_resultado .st-key-nova_analise button:hover,
+.st-key-cabecalho_navegavel button:hover { background: var(--cor-destaque) !important; color: var(--cor-primaria) !important; border-color: transparent !important; }
+.st-key-sobre_container .st-key-sobre_voltar button:active,
+.st-key-tela_resultado .st-key-nova_analise button:active,
+.st-key-cabecalho_navegavel button:active { background: var(--cor-destaque) !important; color: var(--cor-primaria) !important; }
+.st-key-sobre_container .st-key-sobre_voltar button:focus,
+.st-key-tela_resultado .st-key-nova_analise button:focus,
+.st-key-cabecalho_navegavel button:focus,
+.st-key-sobre_container .st-key-sobre_voltar button:focus-visible,
+.st-key-tela_resultado .st-key-nova_analise button:focus-visible,
+.st-key-cabecalho_navegavel button:focus-visible { outline: 2px solid var(--cor-foco) !important; outline-offset: 2px; box-shadow: 0 0 0 1px var(--cor-foco) !important; }
 
 /* Rodape comum da interface */
 .rodape { width: 100%; box-sizing: border-box; margin: .5rem 0 0; padding: .7rem; color: var(--cor-texto-secundario); font: 400 8px var(--fonte-interface); letter-spacing: 3px; text-align: start; text-transform: uppercase; }

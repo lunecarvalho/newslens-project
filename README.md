@@ -1,436 +1,334 @@
 # NewsLens
 
-> **Análise e classificação de notícias falsas em português utilizando Processamento de Linguagem Natural e Aprendizado de Máquina.**
+> Aplicação inteligente de análise de notícias em português com Processamento de Linguagem Natural e Machine Learning.
 
-O **NewsLens** é um projeto acadêmico de Ciência de Dados que investiga padrões linguísticos presentes em notícias falsas e verdadeiras e aplica técnicas de **Processamento de Linguagem Natural (NLP)** e **Machine Learning** para realizar sua classificação.
+O NewsLens analisa textos jornalísticos e apresenta uma classificação binária baseada em padrões linguísticos aprendidos por um modelo BERTimbau ajustado para o projeto. O resultado é uma predição do modelo, acompanhada da sua confiança, e não uma verificação factual da notícia.
 
-O projeto envolve desde a análise exploratória e o pré-processamento do corpus até a comparação entre diferentes algoritmos de classificação. Após os experimentos, o **BERTimbau** foi selecionado como modelo principal do NewsLens.
-
----
+O projeto foi desenvolvido como Projeto Integrador IV da UNIVESP, reunindo investigação científica, experimentação com modelos de linguagem e uma aplicação Streamlit.
 
 ## Objetivo
 
-O NewsLens tem como objetivo desenvolver uma aplicação capaz de analisar textos jornalísticos e classificá-los como:
+O sistema recebe texto digitado pelo usuário ou o conteúdo textual obtido a partir de uma URL de notícia. A interface apresenta uma das classificações:
 
-* 🔴 **Falsa**
-* 🟢 **Verdadeira**
+- **Possivelmente falsa**
+- **Possivelmente verdadeira**
 
-Além da classificação, o projeto busca compreender quais características linguísticas, lexicais e temáticas aparecem no corpus e como diferentes modelos de Machine Learning aprendem esses padrões.
+Cada resultado também exibe a confiança do modelo e os scores do classificador.
 
-> O NewsLens é uma ferramenta experimental de classificação textual e não substitui serviços profissionais de checagem de fatos.
+O NewsLens não determina a verdade factual, não realiza fact-checking, não verifica a reputação do domínio e não substitui fontes jornalísticas ou serviços especializados de checagem.
 
----
+## Como funciona
+
+### Análise por texto
+
+```text
+Texto informado pelo usuário
+        ↓
+Tokenização pelo Transformers
+        ↓
+BERTimbau
+        ↓
+Classificação binária e scores
+        ↓
+Resultado na interface Streamlit
+```
+
+### Análise por URL
+
+```text
+URL informada pelo usuário
+        ↓
+Validação segura da URL
+        ↓
+Obtenção da página
+        ↓
+Trafilatura extrai o conteúdo principal
+        ↓
+Texto da notícia
+        ↓
+BERTimbau e classificação textual
+        ↓
+Resultado na interface Streamlit
+```
+
+A URL é somente uma forma de obter o texto. O domínio não determina a classificação e o NewsLens não atribui uma reputação ao site.
+
+## Análise por URL e segurança
+
+O módulo `app/extrator_noticia.py` utiliza Trafilatura para extrair o conteúdo textual principal de páginas compatíveis. Menus, navegação e outros elementos periféricos são evitados quando a extração consegue identificá-los. Algumas páginas podem não ser compatíveis, especialmente quando exigem login, paywall, bloqueios ou JavaScript para disponibilizar o conteúdo.
+
+As URLs externas são tratadas defensivamente. A implementação:
+
+- aceita somente HTTP e HTTPS;
+- rejeita credenciais na URL;
+- bloqueia localhost, loopback, IPs privados e endereços internos equivalentes;
+- valida os destinos obtidos por DNS;
+- valida novamente cada destino após redirects;
+- permite no máximo três redirects;
+- limita a resposta a 3 MiB;
+- aplica timeouts de DNS, conexão, leitura e tempo total;
+- restringe os tipos de conteúdo aceitos a HTML, XHTML e texto;
+- rejeita conteúdos binários incompatíveis.
+
+O HTML bruto não é enviado ao modelo. Depois da extração, somente o texto identificado como conteúdo da notícia segue para a classificação.
 
 ## Modelo
 
-O modelo final do projeto utiliza o **BERTimbau Base**:
+O modelo utilizado em inferência é [`lunecarvalho/newslens-bertimbau`](https://huggingface.co/lunecarvalho/newslens-bertimbau), publicado no Hugging Face.
 
-```text
-neuralmind/bert-base-portuguese-cased
-```
+Ele é baseado no BERTimbau para português brasileiro, originalmente pré-treinado a partir de [`neuralmind/bert-base-portuguese-cased`](https://huggingface.co/neuralmind/bert-base-portuguese-cased), e foi ajustado para classificação binária:
 
-O BERTimbau é uma versão do BERT pré-treinada para **português brasileiro**.
+| Classe | Significado |
+| ------ | ----------- |
+| `0` | Falsa |
+| `1` | Verdadeira |
 
-Após o fine-tuning para classificação binária:
+Na aplicação:
 
-```text
-0 → Falsa
-1 → Verdadeira
-```
+- o tokenizer e o modelo são carregados com Transformers;
+- o modelo é mantido em modo de avaliação;
+- o recurso é reutilizado com `st.cache_resource`;
+- textos são truncados quando excedem `512` tokens;
+- os logits são convertidos em scores com softmax;
+- os valores apresentados são confiança do modelo e score do classificador, não probabilidades factuais calibradas.
 
-o modelo foi publicado no Hugging Face:
+Na primeira execução, os arquivos do modelo podem ser baixados do Hugging Face. A disponibilidade da conexão externa e o cache das bibliotecas influenciam esse carregamento inicial.
 
-**NewsLens BERTimbau**
-https://huggingface.co/lunecarvalho/newslens-bertimbau
+## Resultados experimentais
 
----
+Os resultados abaixo foram obtidos no conjunto de teste do Fake BR Corpus utilizado no projeto. Eles não representam uma garantia de desempenho para qualquer notícia externa.
 
-## Dataset
+O conjunto de teste possui 720 textos, sendo 360 falsos e 360 verdadeiros. O BERTimbau classificou corretamente 716 exemplos e errou 4:
 
-O projeto utiliza dados derivados do **Fake.Br Corpus**, um corpus de notícias falsas e verdadeiras em português.
-
-Após as etapas de preparação e pré-processamento, o conjunto utilizado nos experimentos contém:
-
-```text
-7.199 notícias
-```
-
-A distribuição entre as classes é aproximadamente balanceada:
-
-| Classe     | Quantidade |
-| ---------- | ---------: |
-| Falsa      |      3.600 |
-| Verdadeira |      3.599 |
-
-Para o experimento final com BERTimbau, os dados foram divididos de forma estratificada:
-
-| Conjunto  | Proporção | Amostras |
-| --------- | --------: | -------: |
-| Treino    |       80% |    5.759 |
-| Validação |       10% |      720 |
-| Teste     |       10% |      720 |
-
-O conjunto final de teste possui **360 notícias falsas e 360 verdadeiras**.
-
----
-
-## Metodologia
-
-O desenvolvimento do projeto foi organizado em diferentes etapas.
-
-### 1. Análise exploratória
-
-Inicialmente foram analisados:
-
-* distribuição das classes;
-* tamanho dos textos;
-* valores ausentes e duplicados;
-* frequência de palavras;
-* unigramas e bigramas;
-* TF-IDF;
-* distribuição temática;
-* diferenças lexicais entre notícias falsas e verdadeiras.
-
-A análise mostrou um corpus fortemente concentrado em notícias relacionadas à **política**, além de diferenças lexicais e estilísticas entre as duas classes.
-
----
-
-### 2. Pré-processamento
-
-Entre as técnicas utilizadas durante os experimentos estão:
-
-* normalização de espaços;
-* remoção de HTML;
-* remoção de URLs;
-* normalização de caracteres;
-* conversão para minúsculas em experimentos específicos;
-* remoção de acentos para modelos clássicos;
-* tokenização;
-* lematização experimental;
-* reconhecimento de entidades para preservação de nomes próprios.
-
-Diferentes representações textuais foram mantidas porque modelos clássicos e Transformers possuem necessidades distintas de pré-processamento.
-
----
-
-### 3. Modelagem de tópicos
-
-O **BERTopic** foi utilizado para explorar os principais assuntos presentes no corpus.
-
-Os tópicos encontrados foram posteriormente agrupados em categorias como:
-
-* Política
-* Segurança
-* Corrupção
-* Internacional
-* Economia
-* Entretenimento
-* Saúde
-* Sociedade
-* Cultura
-* Religião
-* Tecnologia
-* Ciência
-* Educação
-* Meio Ambiente
-
-Essa etapa foi utilizada para análise exploratória e interpretação dos dados, e não como variável de entrada do classificador final.
-
----
-
-### 4. Modelos clássicos
-
-Foram avaliados modelos tradicionais de Machine Learning utilizando representações **TF-IDF**:
-
-* Regressão Logística
-* Multinomial Naive Bayes
-* Linear SVM
-
-O **Linear SVM** apresentou o melhor desempenho entre os modelos clássicos e foi utilizado como principal baseline para comparação com o Transformer.
-
-Também foram realizados:
-
-* validação cruzada estratificada;
-* `Pipeline` com TF-IDF;
-* busca de hiperparâmetros com `GridSearchCV`;
-* análise da matriz de confusão;
-* análise dos pesos das features;
-* análise qualitativa dos erros.
-
----
-
-### 5. BERTimbau
-
-Após os experimentos com modelos clássicos, foi realizado o fine-tuning do:
-
-```text
-neuralmind/bert-base-portuguese-cased
-```
-
-Configuração principal:
-
-| Parâmetro                | Valor                 |
-| ------------------------ | --------------------- |
-| Épocas                   | 3                     |
-| Learning rate            | 2e-5                  |
-| Batch size               | 8                     |
-| Weight decay             | 0.01                  |
-| Maximum sequence length  | 512                   |
-| Precisão                 | BF16                  |
-| Seleção do melhor modelo | F1-score da validação |
-
-O conjunto de teste final permaneceu separado do treinamento e da seleção do melhor checkpoint.
-
----
-
-## Resultados
-
-Os modelos finais foram avaliados nas **mesmas 720 notícias** do conjunto de teste.
-
-| Modelo        |   Accuracy |  Precision |     Recall |   F1-score |
-| ------------- | ---------: | ---------: | ---------: | ---------: |
-| Linear SVM    |     92,22% |     91,30% |     93,33% |     92,31% |
+| Modelo | Accuracy | Precision | Recall | F1-score |
+| ------ | -------: | --------: | -----: | -------: |
+| Regressão Logística | aproximadamente 90,63% | - | - | - |
+| Multinomial Naive Bayes | aproximadamente 86,94% | - | - | - |
+| Linear SVM | 92,22% | 91,30% | 93,33% | 92,31% |
 | **BERTimbau** | **99,44%** | **99,72%** | **99,17%** | **99,44%** |
 
-> Precision, Recall e F1-score da tabela consideram a classe `Verdadeira` como classe positiva.
+Para o BERTimbau, considerando `Verdadeira` como classe positiva:
 
-### Matriz de confusão — BERTimbau
+- **Accuracy:** 99,44%
+- **Precision:** 99,72%
+- **Recall:** 99,17%
+- **F1-score:** 99,44%
 
-|                     | Predita Falsa | Predita Verdadeira |
-| ------------------- | ------------: | -----------------: |
-| **Real Falsa**      |       **359** |              **1** |
-| **Real Verdadeira** |         **3** |            **357** |
-
-O BERTimbau classificou corretamente:
+Matriz de confusão:
 
 ```text
-716 de 720 notícias
+[[359, 1],
+ [3, 357]]
 ```
 
-resultando em apenas **4 classificações incorretas**.
+Esses resultados refletem a distribuição e os padrões do corpus utilizado. O desempenho pode variar em outros períodos, fontes, estilos editoriais e distribuições de dados.
 
-Para a classe **Falsa**, foram obtidos:
+## Experimentação científica
 
-| Métrica | Resultado |
-| Métrica | Resultado |
-|---|---:|
-| Precision | 99,17% |
-| Recall | **99,72%** |
-| F1-score | 99,45% |
+O repositório preserva as etapas de investigação que fundamentaram o projeto:
 
-Das **360 notícias falsas**, **359 foram corretamente identificadas**.
+- análise exploratória de classes, tamanho dos textos, frequência de termos e diferenças lexicais;
+- pré-processamentos experimentais, incluindo normalização, tokenização, lematização e reconhecimento de entidades;
+- representações TF-IDF e avaliação de modelos clássicos;
+- modelagem de tópicos com BERTopic;
+- fine-tuning e avaliação do BERTimbau.
 
----
-
-## Análise dos resultados
-
-Embora o BERTimbau tenha apresentado desempenho elevado no conjunto de teste, a análise exploratória e os experimentos com o Linear SVM mostraram que o corpus possui padrões relacionados a:
-
-- estilo de escrita;
-- vocabulário;
-- expressões temporais;
-- instituições;
-- fontes jornalísticas;
-- estrutura textual.
-
-Isso significa que parte do desempenho pode estar relacionada a características específicas do dataset.
-
-Por esse motivo, os **99,44% de accuracy não devem ser interpretados como uma taxa de acerto para qualquer notícia disponível na internet**.
-
-A validação futura com notícias externas ao Fake.Br Corpus é uma etapa importante para avaliar a capacidade de generalização do modelo.
-
----
-
-## 🤗 Modelo no Hugging Face
-
-O modelo treinado está disponível publicamente no Hugging Face:
-
-**[lunecarvalho/newslens-bertimbau](https://huggingface.co/lunecarvalho/newslens-bertimbau)**
-
-Ele pode ser carregado diretamente com a biblioteca Transformers:
-
-```python
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-
-model_name = "lunecarvalho/newslens-bertimbau"
-
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-model = AutoModelForSequenceClassification.from_pretrained(
-    model_name
-)
-```
-
----
+TF-IDF, BERTopic, NER, lematização e os demais experimentos não são executados durante a inferência atual da aplicação. O pipeline de runtime utiliza o texto de entrada, o tokenizer Transformers e o modelo BERTimbau publicado.
 
 ## Tecnologias
 
-### Entrada de notícias na aplicação
+### Aplicação
 
-O NewsLens aceita texto inserido manualmente e URL de uma página de notícia.
-No caso de URL, a aplicação extrai o conteúdo textual da página e o envia ao
-mesmo modelo de classificação utilizado na análise manual. Trata-se de classificação
-textual, não de verificação factual ou avaliação da reputação do domínio.
+- Python 3.11
+- Streamlit
+- Hugging Face Transformers
+- PyTorch
+- Trafilatura
+- urllib3
 
-O módulo `app/extrator_noticia.py` usa Trafilatura para obter o conteúdo principal
-e, quando disponíveis, título, autor e data. Textos vazios ou claramente insuficientes
-não são classificados. Sites com login, paywall, bloqueios ou conteúdo dependente de
-JavaScript podem não permitir a extração; não há tentativa de contornar essas restrições.
+### Ciência de dados e experimentação
 
-São aceitas URLs HTTP/HTTPS sem credenciais. Todos os IPs retornados pelo DNS precisam
-ser públicos, e a conexão utiliza o IP validado, mantendo Host e validação TLS do domínio.
-Cada redirect é validado novamente (máximo de três). O download aceita HTML/XHTML/texto,
-limita o corpo a 3 MiB e usa timeouts de DNS, conexão e leitura de 5 segundos, com orçamento
-de 25 segundos para o download e verificações entre leituras. Uma leitura em andamento
-pode consumir até seu timeout. Compressão não solicitada é recusada.
-
-Não há cache de artigos, histórico, banco de dados ou persistência permanente de URL/texto.
-O conteúdo permanece apenas em memória durante a sessão; “Nova análise” limpa o estado
-da análise anterior. O modelo e seu truncamento em 512 tokens permanecem iguais.
-
-Instale as dependências da aplicação com `pip install -r requirements.txt`.
-Se Trafilatura ainda não estiver instalada, execute `pip install trafilatura`.
-Os testes usam `unittest`, incluído no Python: `python -m unittest discover -s tests -v`.
-As respostas HTTP são simuladas; a integração usa Streamlit AppTest e um classificador
-simulado, sem baixar pesos ou depender de sites reais.
-
-Referências de implementação: [extração com Trafilatura](https://trafilatura.readthedocs.io/en/latest/corefunctions.html)
-e [conexão HTTPS por IP com hostname preservado](https://urllib3.readthedocs.io/en/stable/advanced-usage.html#custom-sni-hostname).
-
-O projeto utiliza principalmente:
-
-### Linguagem
-
-- Python
-
-### Análise de dados
-
-- Pandas
+- pandas
 - NumPy
-- Matplotlib
-- Seaborn
-
-### Processamento de Linguagem Natural
-
+- scikit-learn
 - NLTK
 - spaCy
 - BERTopic
 - TF-IDF
-- Hugging Face Transformers
+- Matplotlib
+- Seaborn
 
-### Machine Learning
+As bibliotecas de experimentação são utilizadas pelos notebooks e não fazem parte das dependências diretas do runtime da aplicação.
 
-- Scikit-learn
-- Logistic Regression
-- Multinomial Naive Bayes
-- Linear SVM
+## Arquitetura
 
-### Deep Learning
+```mermaid
+flowchart TD
+    A[Entrada do usuário] --> B{Tipo de entrada}
+    B -->|Texto| C[Texto da notícia]
+    B -->|URL| D[Validação segura]
+    D --> E[Trafilatura]
+    E --> C
+    C --> F[Tokenização]
+    F --> G[BERTimbau]
+    G --> H[Classificação e scores]
+    H --> I[Interface Streamlit]
+```
 
-- PyTorch
-- BERT
-- BERTimbau
+Principais responsabilidades:
 
-### Desenvolvimento
+- `app/app.py`: inicialização da aplicação, navegação, formulários e estado da sessão;
+- `app/componentes.py`: telas de análise e apresentação do resultado;
+- `app/model.py`: carregamento cacheado, validação de entrada e inferência;
+- `app/extrator_noticia.py`: validação, obtenção segura e extração de texto por URL;
+- `app/sobre.py`: página Sobre;
+- `app/assets/`: estilos da interface.
 
-- Google Colab
-- Git
-- GitHub
-- Hugging Face
-
----
-
-## 📁 Estrutura do projeto
+## Estrutura do repositório
 
 ```text
 newslens-project/
-│
-├── datasets/
-│   └── datasets utilizados e processados
-│
-├── notebooks/
-│   ├── análise exploratória
-│   ├── pré-processamento
-│   ├── modelos clássicos
-│   └── BERTimbau
-│
-├── results/
-│   └── métricas e análises dos modelos
-│
 ├── app/
-│   └── aplicação NewsLens
-│
+│   ├── app.py
+│   ├── componentes.py
+│   ├── extrator_noticia.py
+│   ├── model.py
+│   ├── sobre.py
+│   └── assets/
+│       ├── analisando.css
+│       ├── navegacao.css
+│       ├── resultado.css
+│       ├── sobre.css
+│       └── style.css
+├── datasets/
+│   ├── cleaned_dataset.csv
+│   ├── dataset_preprocessado.csv
+│   ├── dataset_topics.csv
+│   └── initial_dataset.csv
+├── notebooks/
+│   ├── 01_initial_data_analysis.ipynb
+│   ├── 02_topic_modeling.ipynb
+│   ├── 03_exploratory_data_analysis.ipynb
+│   ├── 04_ner_lemmatizer.ipynb
+│   ├── 05_training_testing_models.ipynb
+│   ├── 05-2_training_testing_models.ipynb
+│   └── 06_bertimbau_model.ipynb
+├── results/
+│   ├── analise_erros_svm.csv
+│   ├── eda_bigramas_interpretacao.csv
+│   ├── eda_bigramas_tfidf.csv
+│   ├── metricas_svm_final.csv
+│   ├── termos_associados_falsa.csv
+│   └── termos_associados_verdadeira.csv
+├── tests/
+│   ├── test_app.py
+│   ├── test_extrator_noticia.py
+│   └── test_model.py
+├── .gitignore
+├── .python-version
 ├── README.md
-└── LICENSE
+└── requirements.txt
 ```
 
-> A estrutura pode sofrer alterações conforme o desenvolvimento da aplicação.
+Os datasets, notebooks e resultados são artefatos científicos para análise e reprodutibilidade. Eles não são necessários para executar o runtime da aplicação.
 
----
+## Instalação e execução local
 
-## Status do projeto
+O ambiente de desenvolvimento utiliza Python 3.11.
 
-O projeto encontra-se em desenvolvimento.
+### Windows PowerShell
 
-### Concluído
+```powershell
+git clone https://github.com/lunecarvalho/newslens-project.git
+cd newslens-project
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+streamlit run app/app.py
+```
 
-- Análise exploratória do dataset
-- Pré-processamento textual
-- Análise de unigramas e bigramas
-- TF-IDF
-- Modelagem de tópicos com BERTopic
-- Treinamento dos modelos clássicos
-- Validação cruzada do Linear SVM
-- Análise de erros
-- Fine-tuning do BERTimbau
-- Avaliação final do BERTimbau
-- Publicação do modelo no Hugging Face
+Depois, acesse [http://localhost:8501](http://localhost:8501).
 
-### Em desenvolvimento
+### Linux/macOS
 
-- Integração do BERTimbau com o NewsLens
-- Desenvolvimento da interface web
-- Testes com notícias externas ao corpus
-- Melhorias na interpretabilidade das previsões
+```bash
+git clone https://github.com/lunecarvalho/newslens-project.git
+cd newslens-project
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+streamlit run app/app.py
+```
 
----
+O arquivo `.python-version` registra a versão `3.11` esperada para o projeto. As dependências diretas do runtime estão fixadas em [requirements.txt](requirements.txt):
 
-## ⚠️ Limitações
+```text
+streamlit==1.63.0
+torch==2.14.0
+transformers==5.17.0
+trafilatura==2.2.0
+urllib3==2.7.0
+```
 
-O NewsLens é um projeto acadêmico e experimental.
+## Testes
 
-A classificação realizada pelo modelo é baseada nos padrões aprendidos durante o treinamento e **não representa uma verificação factual da notícia**.
+A suíte utiliza `unittest` e inclui testes de integração com Streamlit `AppTest`. Para executar:
 
-O modelo:
+```powershell
+python -m unittest discover -s tests -v
+```
 
-- não consulta fontes externas;
-- não realiza fact-checking em tempo real;
-- não verifica evidências ou documentos;
-- pode apresentar desempenho diferente em notícias externas ao dataset;
-- pode reproduzir padrões e vieses presentes nos dados de treinamento.
+O estado atual possui **42 testes automatizados aprovados**. A suíte cobre, entre outros pontos:
 
-Os resultados devem, portanto, ser utilizados como apoio à análise e não como determinação definitiva da veracidade de uma informação.
+- fluxos de análise por texto e por URL;
+- navegação e estado da interface Streamlit;
+- extração com Trafilatura;
+- validação de URL e proteção contra SSRF;
+- redirects, timeouts, tipos de conteúdo e limite de resposta;
+- carregamento cacheado do modelo;
+- classes, scores e confiança;
+- validação de entradas do modelo.
 
----
+A suíte não representa cobertura completa de todos os cenários possíveis de produção.
 
-## Próximos passos
+## Privacidade e uso responsável
 
-Entre as próximas etapas do projeto estão:
+O código atual não mantém histórico permanente das análises, não grava textos ou URLs em banco de dados e utiliza `st.session_state` somente durante a sessão da aplicação. Isso descreve o comportamento da aplicação, sem fazer promessas sobre políticas de infraestrutura de um ambiente futuro.
 
-- integração do modelo com Streamlit;
-- análise de notícias inseridas pelo usuário;
-- avaliação com dados externos;
-- análise de explicabilidade do modelo;
-- estudo de calibração das previsões;
-- expansão das análises linguísticas.
+O resultado apresentado é uma predição do modelo e deve ser utilizado como apoio à análise. Recomenda-se consultar fontes jornalísticas confiáveis e serviços especializados de checagem antes de compartilhar informações.
 
----
+## Limitações
+
+- A classificação é baseada em padrões linguísticos aprendidos no treinamento.
+- O desempenho pode variar fora do Fake BR Corpus, especialmente em outros períodos, fontes e estilos editoriais.
+- A confiança do modelo não representa certeza factual nem probabilidade factual calibrada.
+- Textos acima do limite de 512 tokens são truncados antes da inferência.
+- Páginas web podem impedir ou dificultar a extração do conteúdo.
+- Páginas fortemente dependentes de JavaScript podem não fornecer texto adequado.
+- Login, paywall, bloqueios e formatos incompatíveis podem impedir a análise por URL.
+- O modelo pode reproduzir padrões e vieses presentes nos dados de treinamento.
+
+## Status e próximos passos
+
+### Implementado
+
+- análise exploratória e experimentação científica;
+- modelos clássicos e fine-tuning do BERTimbau;
+- publicação do modelo no Hugging Face;
+- inferência integrada ao Streamlit;
+- análise por texto;
+- análise por URL com Trafilatura;
+- tratamento defensivo de URLs;
+- página Sobre;
+- testes automatizados.
+
+### Próxima etapa
+
+- preparação e configuração do deploy na plataforma de hospedagem.
 
 ## Referências
 
-- Fake.Br Corpus
-- BERT
-- BERTimbau
-- BERTopic
-- Hugging Face Transformers
-- Scikit-learn
+- [Repositório do NewsLens](https://github.com/lunecarvalho/newslens-project)
+- [NewsLens BERTimbau](https://huggingface.co/lunecarvalho/newslens-bertimbau)
+- [BERTimbau Base](https://huggingface.co/neuralmind/bert-base-portuguese-cased)
+- [Fake.Br Corpus](https://github.com/roneysco/Fake.br-Corpus)

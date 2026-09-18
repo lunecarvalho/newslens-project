@@ -176,7 +176,7 @@ else:
         st.html('''
             <section class="introducao" id="inicio">
                 <h1>Analise uma notícia</h1>
-                <p>Insira o texto ou a URL da notícia para verificar a veracidade do conteúdo com IA.</p>
+                <p>Insira o texto ou a URL da notícia para analisar o conteúdo com IA.</p>
             </section>
         ''')
         erro_analise = st.session_state.pop("erro_analise", None)

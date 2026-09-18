@@ -1,6 +1,6 @@
 # Dependências da aplicação Streamlit (os notebooks têm ambientes próprios).
-streamlit
-torch
-transformers
-trafilatura>=2.0,<3
-urllib3>=2.0,<3
+streamlit==1.63.0
+torch==2.14.0
+transformers==5.17.0
+trafilatura==2.2.0
+urllib3==2.7.0

@@ -1,16 +1,25 @@
 import torch
+import streamlit as st
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 MODELO = "lunecarvalho/newslens-bertimbau"
 
-tokenizer = AutoTokenizer.from_pretrained(MODELO)
 
-modelo = AutoModelForSequenceClassification.from_pretrained(MODELO)
-
-modelo.eval()
+@st.cache_resource
+def carregar_modelo():
+    tokenizer = AutoTokenizer.from_pretrained(MODELO)
+    modelo = AutoModelForSequenceClassification.from_pretrained(MODELO)
+    modelo.eval()
+    return tokenizer, modelo
 
 
 def classificar_noticia(texto):
+    if not isinstance(texto, str):
+        raise TypeError("O texto da notícia deve ser uma string.")
+    if not texto.strip():
+        raise ValueError("O texto da notícia não pode estar vazio.")
+
+    tokenizer, modelo = carregar_modelo()
     entradas = tokenizer(
         texto,
         return_tensors="pt",

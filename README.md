@@ -1,6 +1,6 @@
 # NewsLens
 
-> Aplicação inteligente de análise de notícias em português com Processamento de Linguagem Natural e Machine Learning.
+> Aplicação para análise inteligente de notícias em português utilizando Processamento de Linguagem Natural (NLP) e Machine Learning.
 
 O NewsLens analisa textos jornalísticos e apresenta uma classificação binária baseada em padrões linguísticos aprendidos por um modelo BERTimbau ajustado para o projeto. O resultado é uma predição do modelo, acompanhada da sua confiança, e não uma verificação factual da notícia.
 
@@ -72,6 +72,14 @@ As URLs externas são tratadas defensivamente. A implementação:
 
 O HTML bruto não é enviado ao modelo. Depois da extração, somente o texto identificado como conteúdo da notícia segue para a classificação.
 
+## Aplicação 
+
+O **NewsLens** está disponível publicamente por meio do **Streamlit Community Cloud**. 
+
+Para visualizar o projeto, clique abaixo:
+
+**[Acessar o NewsLens](https://newslensbr.streamlit.app/)**
+
 ## Modelo
 
 O modelo utilizado em inferência é [`lunecarvalho/newslens-bertimbau`](https://huggingface.co/lunecarvalho/newslens-bertimbau), publicado no Hugging Face.
@@ -137,7 +145,7 @@ TF-IDF, BERTopic, NER, lematização e os demais experimentos não são executad
 
 ## Tecnologias
 
-### Aplicação
+### Desenvolvimento da aplicação
 
 - Python 3.11
 - Streamlit
@@ -308,7 +316,7 @@ O resultado apresentado é uma predição do modelo e deve ser utilizado como ap
 - Login, paywall, bloqueios e formatos incompatíveis podem impedir a análise por URL.
 - O modelo pode reproduzir padrões e vieses presentes nos dados de treinamento.
 
-## Status e próximos passos
+## Status do projeto
 
 ### Implementado
 
@@ -320,15 +328,22 @@ O resultado apresentado é uma predição do modelo e deve ser utilizado como ap
 - análise por URL com Trafilatura;
 - tratamento defensivo de URLs;
 - página Sobre;
-- testes automatizados.
+- testes automatizados;
+- deploy realizado no Streamlit Community Cloud.
 
-### Próxima etapa
+### Etapas em desenvolvimento
 
-- preparação e configuração do deploy na plataforma de hospedagem.
+- ampliar a cobertura de testes automatizados;
+- realizar testes com maior variedade de notícias e fontes externas;
+- avaliar o comportamento do modelo em textos fora do Fake BR Corpus;
+- investigar a calibração dos níveis de confiança do classificador;
+- realizar testes de usabilidade da aplicação;
+- monitorar o desempenho e a estabilidade da versão publicada.
 
 ## Referências
 
 - [Repositório do NewsLens](https://github.com/lunecarvalho/newslens-project)
 - [NewsLens BERTimbau](https://huggingface.co/lunecarvalho/newslens-bertimbau)
+- [NewsLens App](https://newslensbr.streamlit.app/)
 - [BERTimbau Base](https://huggingface.co/neuralmind/bert-base-portuguese-cased)
 - [Fake.Br Corpus](https://github.com/roneysco/Fake.br-Corpus)

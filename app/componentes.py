@@ -35,7 +35,7 @@ def exibir_tela_analisando(icone_lupa):
 
 
 def formatar_percentual(score):
-    return f"{score * 100:.0f}%"
+    return f"{score * 100:.2f}%".replace(".", ",")
 
 
 def criar_indicador_confianca(confianca, estado):
@@ -54,7 +54,7 @@ def criar_indicador_confianca(confianca, estado):
     </svg>'''
     imagem = b64encode(desenho.encode("utf-8")).decode("ascii")
     return f'''
-        <div class="indicador-confianca" style="--resultado-percentual: {percentual:.8f}; --resultado-numero-final: {round(percentual)};"
+        <div class="indicador-confianca" style="--resultado-percentual: {percentual:.8f};"
              role="img" aria-label="Confiança do modelo: {formatar_percentual(confianca)}">
             <img class="anel-confianca" src="data:image/svg+xml;base64,{imagem}" alt="" width="220" height="220">
             <div class="centro-confianca" aria-hidden="true">

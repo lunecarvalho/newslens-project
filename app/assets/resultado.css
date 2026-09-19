@@ -37,18 +37,12 @@
 .resultado-pagina .explicacao-resultado { font-size: .875rem; font-weight: 300; line-height: 1.8; color: var(--cor-texto-secundario); margin: 0 0 1.2rem; }
 .resultado-pagina .historico-visual { font-size: .75rem; color: var(--cor-primaria); text-decoration: underline; text-underline-offset: 3px; cursor: default; }
 
-/* Progresso e contador animados no navegador; sem reruns ou espera em Python. */
-@property --resultado-numero { syntax: '<integer>'; inherits: false; initial-value: 0; }
+/* Progresso animado no navegador; sem reruns ou espera em Python. */
 .resultado-pagina .indicador-confianca { width: 216px; max-width: 100%; aspect-ratio: 1; position: relative; margin-inline: auto; }
 .resultado-pagina .anel-confianca { display: block; width: 100%; height: 100%; position: absolute; inset: 0; }
 .resultado-pagina .centro-confianca { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: .35rem; }
 .resultado-pagina .numero-confianca { font: 400 2.6rem/1.2 var(--fonte-mono); color: var(--cor-resultado); }
 .resultado-pagina .rotulo-confianca { font-size: .75rem; color: var(--cor-texto-secundario); }
-@supports (background: paint(something)) {
-    .resultado-pagina .numero-confianca { font-size: 0; --resultado-numero: var(--resultado-numero-final); counter-reset: confianca var(--resultado-numero); animation: resultado-contar-confianca 1.5s ease-out both; }
-    .resultado-pagina .numero-confianca::after { content: counter(confianca) '%'; font-size: 2.6rem; }
-}
-@keyframes resultado-contar-confianca { from { --resultado-numero: 0; } to { --resultado-numero: var(--resultado-numero-final); } }
 
 /* Detalhes e distribuição binária. */
 .resultado-pagina .secao-detalhes { margin-top: 2.5rem; }

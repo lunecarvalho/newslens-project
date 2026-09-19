@@ -19,6 +19,16 @@ RESULTADO = {"classe": "Verdadeira", "confianca": 0.8,
              "score_falsa": 0.2, "score_verdadeira": 0.8}
 
 
+class ComponentesFormatacaoTest(unittest.TestCase):
+    def test_percentual_usa_duas_casas_sem_alterar_o_score(self):
+        self.assertEqual(componentes.formatar_percentual(0.9997439981), "99,97%")
+        self.assertEqual(componentes.formatar_percentual(0.7897999883), "78,98%")
+
+    def test_indicador_exibe_percentual_com_duas_casas(self):
+        indicador = componentes.criar_indicador_confianca(0.9997439981, "verdadeira")
+        self.assertIn("99,97%", indicador)
+
+
 class FluxoStreamlitTest(unittest.TestCase):
     def setUp(self):
         self.eventos = []

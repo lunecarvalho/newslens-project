@@ -152,9 +152,31 @@
 .st-key-conteudo_principal [role="tablist"]::after,
 .st-key-conteudo_principal [role="tab"] .react-aria-SelectionIndicator { display: none; }
 .st-key-conteudo_principal :is([data-testid="stTabHighlight"], [data-testid="stTabBorder"]) { display: none; }
-.st-key-cartao_url input { font-size: .875rem; background: var(--cor-superficie); }
+.st-key-cartao_url input {
+    font-size: .875rem;
+    color: var(--cor-texto);
+    -webkit-text-fill-color: var(--cor-texto);
+    background: var(--cor-superficie);
+    background-color: var(--cor-superficie);
+    color-scheme: light;
+    appearance: none;
+    -webkit-appearance: none;
+    caret-color: var(--cor-primaria);
+}
 .st-key-cartao_url input:disabled { -webkit-text-fill-color: var(--cor-texto-secundario); opacity: 1; }
-.st-key-cartao_url input::placeholder { color: var(--cor-texto-secundario); opacity: 1; }
+.st-key-cartao_url input::placeholder {
+    color: var(--cor-texto-secundario);
+    -webkit-text-fill-color: var(--cor-texto-secundario);
+    opacity: 1;
+}
+.st-key-cartao_url input:-webkit-autofill,
+.st-key-cartao_url input:-webkit-autofill:hover,
+.st-key-cartao_url input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--cor-texto);
+    -webkit-box-shadow: 0 0 0 1000px var(--cor-superficie) inset;
+    box-shadow: 0 0 0 1000px var(--cor-superficie) inset;
+    caret-color: var(--cor-primaria);
+}
 .st-key-cartao_url button:disabled { opacity: 1; cursor: not-allowed; }
 
 /* Resultado: preserva as cores semanticas dos avisos do Streamlit. */
